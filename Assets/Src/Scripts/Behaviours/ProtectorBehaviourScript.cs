@@ -13,21 +13,40 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 	[SerializeField]
 	private float shootCandence;
 	[SerializeField]
-	private float _speed;
+	private float _rotationSpeed = 10;
+	[SerializeField]
+	private float _moveSpeed = 2;
 	#endregion
 
+	#region Components
+
+	private Rigidbody2D _rigidBody2D;
+
+	#endregion
+	[SerializeField]
 	private Vector2 MovimentPosition;
 
 
 	// Use this for initialization
 	void Start () {
+
+		this.MovimentPosition = transform.position;
 		
+		this._rigidBody2D = GetComponent<Rigidbody2D> ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
 		Rotate ();
+
+		if (Input.GetMouseButtonDown (0)) 
+		{
+			// teste
+			MovimentPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		}
+
+		Move ();
 
 	}
 
@@ -41,12 +60,20 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 		var newRotation = Quaternion.LookRotation(transform.position - _enemyTarget.position, Vector3.forward);
 		newRotation.x = 0;
 		newRotation.y = 0;
-		transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * _speed);
+		transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * _rotationSpeed);
 	}
 
-	private void MoveTo()
+
+	private void Move()
 	{
-		
+
+		if (Vector2.Distance (transform.position, this.MovimentPosition) < 0.1f)
+			return;
+
+		Vector2 newPosition = Vector2.Lerp(transform.position,MovimentPosition,Time.deltaTime * _moveSpeed);
+
+		this._rigidBody2D.MovePosition (newPosition);
+
 	}
 
 	public void OnTriggerEnter2D(Collider2D other)
@@ -60,5 +87,7 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 	{
 		this._enemyTarget = null;
 	}
+
+
 
 }
