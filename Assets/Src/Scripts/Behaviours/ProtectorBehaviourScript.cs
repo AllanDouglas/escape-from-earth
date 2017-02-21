@@ -11,11 +11,14 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 	[SerializeField]
 	private int _hitPoints;
 	[SerializeField]
-	private float shootCandence;
+	private float _shootCadence = .5f;
 	[SerializeField]
-	private float _rotationSpeed = 10;
+	private float _rotationSpeed = 10f;
 	[SerializeField]
-	private float _moveSpeed = 2;
+	private float _moveSpeed = 2f;
+	[SerializeField]
+	private ProjectileBehaviourScript _projectilePrefab;
+
 	#endregion
 
 	#region Components
@@ -23,9 +26,18 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 	private Rigidbody2D _rigidBody2D;
 
 	#endregion
-	[SerializeField]
+
+	#region Properties
+
 	private Vector2 MovimentPosition;
 
+	private bool _moving = false;
+
+	private float _shootCadenceController = 0;
+
+	private ProjectileBehaviourScript[] _projectilePool;
+
+	#endregion
 
 	// Use this for initialization
 	void Start () {
@@ -33,29 +45,71 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 		this.MovimentPosition = transform.position;
 		
 		this._rigidBody2D = GetComponent<Rigidbody2D> ();
+
+		LoadProjectile ();
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-		Rotate ();
+		if (this._enemyTarget != null)
+			Rotate ();
 
-		if (Input.GetMouseButtonDown (0)) 
-		{
-			// teste
-			MovimentPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		if(_moving)
+			Move ();
+
+		if (this._enemyTarget != null & _shootCadenceController >= _shootCadence){
+			Shoot ();
+			_shootCadenceController = 0.0f; 
 		}
 
-		Move ();
+		_shootCadenceController += Time.deltaTime;
 
 	}
 
+	private void LoadProjectile()
+	{
+
+		_projectilePool = new ProjectileBehaviourScript[30];
+
+		for (int i = 0; i < _projectilePool.Length; i++) 
+		{
+			_projectilePool [i] = Instantiate<ProjectileBehaviourScript> (this._projectilePrefab,transform.position,Quaternion.identity);
+
+			_projectilePool [i].gameObject.SetActive (false);
+		}
+
+
+	}
+
+	private void Shoot()
+	{
+		
+
+		ProjectileBehaviourScript projectile = null;
+
+		for (int i = 0; i < _projectilePool.Length; i++) 
+		{
+			if (_projectilePool [i].gameObject.activeSelf == false) 
+			{
+				projectile = _projectilePool [i];
+
+				projectile.transform.position = transform.position;
+				projectile.transform.rotation = transform.rotation;
+				projectile.Shoot ();
+
+				break;
+
+			}
+		}
+
+	}	
 
 
 	private void Rotate()
 	{
-		if (this._enemyTarget == null)
-			return;
+		
 		
 		var newRotation = Quaternion.LookRotation(transform.position - _enemyTarget.position, Vector3.forward);
 		newRotation.x = 0;
@@ -63,12 +117,30 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 		transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * _rotationSpeed);
 	}
 
+	private void MoveTo(Vector2 position)
+	{
+
+		if (Vector2.Distance (position, this.MovimentPosition) < 1)
+			return;
+
+		this._moving = true;
+
+		this.MovimentPosition = position;
+
+	}
+
+	private void Stop()
+	{
+		_moving = false;
+	}
 
 	private void Move()
 	{
 
-		if (Vector2.Distance (transform.position, this.MovimentPosition) < 0.1f)
+		if (Vector2.Distance (transform.position, this.MovimentPosition) < 0.1f) {
+			this._moving = false;
 			return;
+		}
 
 		Vector2 newPosition = Vector2.Lerp(transform.position,MovimentPosition,Time.deltaTime * _moveSpeed);
 
@@ -78,6 +150,8 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 
 	public void OnTriggerEnter2D(Collider2D other)
 	{
+		Debug.Log ("target na area");
+		
 		if(this._enemyTarget == null)
 			this._enemyTarget = other.transform;
 
@@ -85,6 +159,9 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 
 	public void OnTriggerExit2D(Collider2D other)
 	{
+
+		Debug.Log ("target fora area");
+
 		this._enemyTarget = null;
 	}
 
