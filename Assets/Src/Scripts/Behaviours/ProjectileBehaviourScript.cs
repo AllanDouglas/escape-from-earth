@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ProjectileBehaviourScript : MonoBehaviour {
+public class ProjectileBehaviourScript : MonoBehaviour , IDamageable {
 
 	#region Inspector
 	[SerializeField]
@@ -13,7 +13,12 @@ public class ProjectileBehaviourScript : MonoBehaviour {
 
 	#region Variables Controller
 
-	private Vector2 startPosition;
+	private Vector2 _startPosition;
+
+	public int HitPoints {
+		get ;
+		private set;
+	}
 
 	#endregion
 
@@ -36,7 +41,7 @@ public class ProjectileBehaviourScript : MonoBehaviour {
 
 		//this._collider2d = GetComponent<Collider2D> ();
 			
-		startPosition = transform.position;
+		_startPosition = transform.position;
 
 
 
@@ -45,12 +50,23 @@ public class ProjectileBehaviourScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (Vector2.Distance (transform.position, startPosition) >= _maxDistance) 
+		if (Vector2.Distance (transform.position, _startPosition) >= _maxDistance) 
 		{
 			gameObject.SetActive (false);
 		}
 
 	}
+
+	#region IDamageable implementation
+
+	public void Damage (int damage)
+	{
+		this.HitPoints -= damage;
+	}
+
+
+
+	#endregion
 
 	public void Shoot()
 	{

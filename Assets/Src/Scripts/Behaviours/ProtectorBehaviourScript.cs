@@ -18,7 +18,10 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 	private float _moveSpeed = 2f;
 	[SerializeField]
 	private ProjectileBehaviourScript _projectilePrefab;
-
+	[SerializeField]
+	private float _vision = 1f;
+	[SerializeField]
+	private CircleCollider2D _visionCollider;
 	#endregion
 
 	#region Components
@@ -33,7 +36,7 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 
 	private bool _moving = false;
 
-	private float _shootCadenceController = 0;
+	private float _shootCadenceController = 1f;
 
 	private ProjectileBehaviourScript[] _projectilePool;
 
@@ -45,6 +48,8 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 		this.MovimentPosition = transform.position;
 		
 		this._rigidBody2D = GetComponent<Rigidbody2D> ();
+
+		_visionCollider.radius = _vision;
 
 		LoadProjectile ();
 
@@ -66,6 +71,8 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 
 		_shootCadenceController += Time.deltaTime;
 
+		_visionCollider.radius = _vision;
+
 	}
 
 	private void LoadProjectile()
@@ -86,6 +93,19 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 	private void Shoot()
 	{
 		
+		
+		RaycastHit2D hit = Physics2D.Raycast (
+			transform.position, 
+			transform.up, 
+			_vision,LayerMask.GetMask("Enemy"));
+
+		Debug.DrawRay (transform.position, transform.up * _vision );
+
+		if ( hit.collider == null )
+			return;
+
+		if (!hit.transform.CompareTag ("Enemy"))
+			return;
 
 		ProjectileBehaviourScript projectile = null;
 
