@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Interfaces;
 
-public class ProjectileBehaviourScript : MonoBehaviour , IDamageable {
+
+public class ProjectileBehaviourScript : MonoBehaviour {
 
 	#region Inspector
 	[SerializeField]
@@ -15,11 +17,6 @@ public class ProjectileBehaviourScript : MonoBehaviour , IDamageable {
 
 	private Vector2 _startPosition;
 
-	public int HitPoints {
-		get ;
-		private set;
-	}
-
 	#endregion
 
 	#region Components
@@ -31,19 +28,17 @@ public class ProjectileBehaviourScript : MonoBehaviour , IDamageable {
 
 	void Awake()
 	{
+		this._collider2d = GetComponent<Collider2D> ();
 		this._rigidbody2d = GetComponent<Rigidbody2D> ();
 	}
 
+	#region Unity Methods
 	// Use this for initialization
 	void Start () {
 
-
-
-		//this._collider2d = GetComponent<Collider2D> ();
+	//this._collider2d = GetComponent<Collider2D> ();
 			
 		_startPosition = transform.position;
-
-
 
 	}
 	
@@ -56,16 +51,6 @@ public class ProjectileBehaviourScript : MonoBehaviour , IDamageable {
 		}
 
 	}
-
-	#region IDamageable implementation
-
-	public void Damage (int damage)
-	{
-		this.HitPoints -= damage;
-	}
-
-
-
 	#endregion
 
 	public void Shoot()
@@ -74,6 +59,13 @@ public class ProjectileBehaviourScript : MonoBehaviour , IDamageable {
 		this._rigidbody2d.velocity = transform.up * _velocity;
 	}
 
+
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		if(other.gameObject.CompareTag("Enemy"))
+			gameObject.SetActive (false);
+
+	}
 		
 
 

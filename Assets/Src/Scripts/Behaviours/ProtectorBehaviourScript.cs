@@ -101,6 +101,8 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 
 		Debug.DrawRay (transform.position, transform.up * _vision );
 
+
+
 		if ( hit.collider == null )
 			return;
 
@@ -171,7 +173,10 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 	public void OnTriggerEnter2D(Collider2D other)
 	{
 		Debug.Log ("target na area");
-		
+
+		if (!other.gameObject.CompareTag ("Enemy"))
+			return;
+
 		if(this._enemyTarget == null)
 			this._enemyTarget = other.transform;
 
@@ -182,7 +187,8 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 
 		Debug.Log ("target fora area");
 
-		this._enemyTarget = null;
+		if(other.transform == _enemyTarget)
+			this._enemyTarget = null;
 	}
 
 

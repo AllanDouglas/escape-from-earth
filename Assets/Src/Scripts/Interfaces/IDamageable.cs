@@ -1,13 +1,13 @@
 ﻿using System;
 
+namespace Interfaces{
+	public interface IDamageable
+	{
 
-public interface IDamageable
-{
+		int HitPoints { get;}
 
-	int HitPoints { get;}
+		void Damage(int damage);
 
-	void Damage(int damage);
+	}
 
 }
-
-
