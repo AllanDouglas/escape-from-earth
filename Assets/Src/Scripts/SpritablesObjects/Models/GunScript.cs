@@ -7,7 +7,7 @@ public class GunScript : ScriptableObject, Interfaces.IGun
 	[SerializeField]
 	private string Name;
 	[SerializeField]
-	private float _power;
+	private int _power;
 	[SerializeField]
 	private ProjectileBehaviourScript _projectilePrefab;
 
@@ -19,7 +19,7 @@ public class GunScript : ScriptableObject, Interfaces.IGun
 		Debug.Log ("disparando");
 	}
 
-	public float Power {
+	public int Power {
 		get {
 			return _power;
 		}

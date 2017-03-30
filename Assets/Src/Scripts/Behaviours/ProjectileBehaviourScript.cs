@@ -4,19 +4,33 @@ using UnityEngine;
 using Interfaces;
 
 
-public class ProjectileBehaviourScript : MonoBehaviour {
+public class ProjectileBehaviourScript : MonoBehaviour , IGun {
 
 	#region Inspector
 	[SerializeField]
 	private float _velocity;
 	[SerializeField]
 	private float _maxDistance;
+	[SerializeField]
+	[Range(1,5)]
+	private int _power;
 	#endregion
 
 	#region Variables Controller
 
 	private Vector2 _startPosition;
 
+	#endregion
+
+	#region Properties
+	public int Power 
+	{
+		get 
+		{
+			return _power;
+		}
+	}
+		
 	#endregion
 
 	#region Components
@@ -62,8 +76,14 @@ public class ProjectileBehaviourScript : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		if(other.gameObject.CompareTag("Enemy"))
-			gameObject.SetActive (false);
+		if (other.gameObject.CompareTag (gameObject.tag))
+			return;
+			
+
+		gameObject.SetActive (false);
+
+		IDamageable obj = other.gameObject.GetComponent<IDamageable> ();
+		obj.Damage (Power);
 
 	}
 		

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ProtectorBehaviourScript : MonoBehaviour {
+public class InvasorBehaviourScript : MonoBehaviour, Interfaces.IDamageable {
 
 
 	#region Inspector
@@ -32,6 +32,15 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 
 	#region Properties
 
+
+	public int HitPoints
+	{
+		get 
+		{
+			return this._hitPoints;
+		}
+	}
+
 	private Vector2 MovimentPosition;
 
 	private bool _moving = false;
@@ -46,7 +55,7 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 	void Start () {
 
 		this.MovimentPosition = transform.position;
-		
+
 		this._rigidBody2D = GetComponent<Rigidbody2D> ();
 
 		_visionCollider.radius = _vision;
@@ -54,7 +63,7 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 		LoadProjectile ();
 
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 
@@ -92,8 +101,8 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 
 	private void Shoot()
 	{
-		
-		
+
+
 		RaycastHit2D hit = Physics2D.Raycast (
 			transform.position, 
 			transform.up, 
@@ -116,11 +125,10 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 			if (_projectilePool [i].gameObject.activeSelf == false) 
 			{
 				projectile = _projectilePool [i];
-
+				projectile.gameObject.tag = gameObject.tag;
 				projectile.transform.position = transform.position;
 				projectile.transform.rotation = transform.rotation;
 				projectile.Shoot ();
-
 				break;
 
 			}
@@ -131,8 +139,7 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 
 	private void Rotate()
 	{
-		
-		
+
 		var newRotation = Quaternion.LookRotation(transform.position - _enemyTarget.position, Vector3.forward);
 		newRotation.x = 0;
 		newRotation.y = 0;
@@ -170,6 +177,26 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 
 	}
 
+	#region IDamageable implementation
+
+	public void Damage (int damage)
+	{
+		this._hitPoints -= damage;
+
+		if (_hitPoints <= 0) 
+		{
+			gameObject.SetActive (false);
+		}
+
+	}
+
+
+	#endregion
+
+	#region Collision Methods
+
+
+
 	public void OnTriggerEnter2D(Collider2D other)
 	{
 		Debug.Log ("target na area");
@@ -191,6 +218,5 @@ public class ProtectorBehaviourScript : MonoBehaviour {
 			this._enemyTarget = null;
 	}
 
-
-
+	#endregion
 }

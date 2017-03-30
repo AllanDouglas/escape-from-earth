@@ -4,7 +4,7 @@ namespace Interfaces
 {
 	public interface IGun
 	{
-		float Power { get; }
+		int Power { get; }
 
 		void Shoot();
 
