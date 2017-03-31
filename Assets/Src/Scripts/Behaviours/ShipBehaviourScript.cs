@@ -71,8 +71,8 @@ public class ShipBehaviourScript : MonoBehaviour, Interfaces.IDamageable {
 	// Update is called once per frame
 	void Update () {
 
-		if (this._enemyTarget != null)
-			Rotate ();
+		if (this._enemyTarget != null && _enemyTarget.gameObject.activeSelf  &!_moving )
+			Rotate (this._enemyTarget.position);
 
 		if(_moving)
 			Move ();
@@ -141,17 +141,14 @@ public class ShipBehaviourScript : MonoBehaviour, Interfaces.IDamageable {
 	}	
 
 
-	private void Rotate()
+	private void Rotate(Vector3 targetPosition)
 	{
 		
-		var newRotation = Quaternion.LookRotation(transform.position - _enemyTarget.position, Vector3.forward);
-		newRotation.x = 0;
-		newRotation.y = 0;
+		var deltaRotation = Quaternion.LookRotation(transform.position - targetPosition, Vector3.forward);
+		deltaRotation.x = 0;
+		deltaRotation.y = 0;
 
-		Debug.Log (transform.rotation.eulerAngles);
-		Debug.Log (_enemyTarget.rotation.eulerAngles);
-
-		transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * _rotationSpeed);
+		transform.rotation = Quaternion.Slerp(transform.rotation, deltaRotation, Time.deltaTime * _rotationSpeed);
 	}
 
 	public void MoveTo(Vector2 position)
@@ -166,7 +163,7 @@ public class ShipBehaviourScript : MonoBehaviour, Interfaces.IDamageable {
 
 	}
 
-	private void Stop()
+	public void Stop()
 	{
 		_moving = false;
 	}
@@ -178,10 +175,15 @@ public class ShipBehaviourScript : MonoBehaviour, Interfaces.IDamageable {
 			this._moving = false;
 			return;
 		}
+		var deltaRotation = Quaternion.LookRotation(transform.position - (Vector3) MovimentPosition, Vector3.forward);
+		deltaRotation.x = 0;
+		deltaRotation.y = 0;
 
-		Vector2 newPosition = Vector2.Lerp(transform.position,MovimentPosition,Time.deltaTime * _moveSpeed);
+		transform.rotation = deltaRotation;
 
-		this._rigidBody2D.MovePosition (newPosition);
+
+
+		this._rigidBody2D.MovePosition ((transform.position + transform.up * Time.deltaTime * _moveSpeed));
 
 	}
 
