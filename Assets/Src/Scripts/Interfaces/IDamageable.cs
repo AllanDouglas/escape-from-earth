@@ -1,6 +1,5 @@
-﻿using System;
+﻿namespace Interfaces{
 
-namespace Interfaces{
 	public interface IDamageable
 	{
 

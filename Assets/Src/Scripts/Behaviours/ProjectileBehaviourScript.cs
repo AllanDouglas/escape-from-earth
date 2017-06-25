@@ -4,89 +4,91 @@ using UnityEngine;
 using Interfaces;
 
 
-public class ProjectileBehaviourScript : MonoBehaviour , IGun {
+public class ProjectileBehaviourScript : MonoBehaviour
+{
 
-	#region Inspector
-	[SerializeField]
-	private float _velocity;
-	[SerializeField]
-	private float _maxDistance;
-	[SerializeField]
-	[Range(1,5)]
-	private int _power;
-	#endregion
+    #region Inspector
+    [SerializeField]
+    private float _velocity;
+    [SerializeField]
+    private float _maxDistance;
+    [SerializeField]
+    [Range(1, 5)]
+    private int _power;
+    #endregion
 
-	#region Variables Controller
+    #region Variables Controller
 
-	private Vector2 _startPosition;
+    private Vector2 _startPosition;
 
-	#endregion
+    #endregion
 
-	#region Properties
-	public int Power 
-	{
-		get 
-		{
-			return _power;
-		}
-	}
-		
-	#endregion
+    #region Properties
+    public int Power
+    {
+        get
+        {
+            return _power;
+        }
+    }
 
-	#region Components
+    #endregion
 
-	private Collider2D _collider2d;
-	private Rigidbody2D _rigidbody2d;
+    #region Components
 
-	#endregion
+    private Collider2D _collider2d;
+    private Rigidbody2D _rigidbody2d;
 
-	void Awake()
-	{
-		this._collider2d = GetComponent<Collider2D> ();
-		this._rigidbody2d = GetComponent<Rigidbody2D> ();
-	}
+    #endregion
 
-	#region Unity Methods
-	// Use this for initialization
-	void Start () {
+    void Awake()
+    {
+        this._collider2d = GetComponent<Collider2D>();
+        this._rigidbody2d = GetComponent<Rigidbody2D>();
+    }
 
-	//this._collider2d = GetComponent<Collider2D> ();
-			
-		_startPosition = transform.position;
+    #region Unity Methods
+    // Use this for initialization
+    void Start()
+    {
 
-	}
-	
-	// Update is called once per frame
-	void Update () {
+        //this._collider2d = GetComponent<Collider2D> ();
 
-		if (Vector2.Distance (transform.position, _startPosition) >= _maxDistance) 
-		{
-			gameObject.SetActive (false);
-		}
+        _startPosition = transform.position;
 
-	}
-	#endregion
+    }
 
-	public void Shoot()
-	{
-		gameObject.SetActive (true);
-		this._rigidbody2d.velocity = transform.up * _velocity;
-	}
+    // Update is called once per frame
+    void Update()
+    {
 
+        if (Vector2.Distance(transform.position, _startPosition) >= _maxDistance)
+        {
+            gameObject.SetActive(false);
+        }
 
-	void OnTriggerEnter2D(Collider2D other)
-	{
-		if (other.gameObject.CompareTag (gameObject.tag))
-			return;
-			
+    }
+    #endregion
 
-		gameObject.SetActive (false);
+    public void Shoot()
+    {
+        gameObject.SetActive(true);
+        this._rigidbody2d.velocity = transform.up * _velocity;
+    }
 
-		IDamageable obj = other.gameObject.GetComponent<IDamageable> ();
-		obj.Damage (Power);
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag(gameObject.tag))
+            return;
 
-	}
-		
+        gameObject.SetActive(false);
+
+        IDamageable obj = other.gameObject.GetComponent<IDamageable>();
+        if (obj != null)
+            obj.Damage(Power);
+
+    }
+
 
 
 }

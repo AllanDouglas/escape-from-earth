@@ -2,33 +2,41 @@
 using System.Collections.Generic;
 using Interfaces;
 using UnityEngine;
+using System;
 
-public class PlanetBehaviourScript : MonoBehaviour, IDamageable {
+public class PlanetBehaviourScript : MonoBehaviour, IDamageable
+{
 
-	[SerializeField]
-	private int _hitPoints;
+    #region Inspector
+    [SerializeField]
+    private int _hitPoints;
+    #endregion
 
-	public int HitPoints 
-	{
-		get 
-		{
-			return _hitPoints;
-		}
-	}
+    // events
+    public Action OnDestroy;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    public int HitPoints
+    {
+        get
+        {
+            return _hitPoints;
+        }
+    }
 
-		transform.Rotate (Vector3.forward, -1, Space.Self);
-	}	
+    // Update is called once per frame
+    void Update()
+    {
+        transform.Rotate(Vector3.forward, -1, Space.Self);
+    }
 
-	public void Damage(int damage)
-	{
-		this._hitPoints -= damage;
-	}
+    public void Damage(int damage)
+    {
+        this._hitPoints -= damage;
+
+        if (HitPoints == 0)
+        {
+            if (OnDestroy != null) OnDestroy();
+        }
+    }
+   
 }
