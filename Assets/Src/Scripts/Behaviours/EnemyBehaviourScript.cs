@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 namespace Behaviour
 {
     public class EnemyBehaviourScript : Ship
@@ -26,7 +27,7 @@ namespace Behaviour
         {
             _shootCadenceController += Time.deltaTime;
 
-            this.UpdateSensorSize();
+            //this.UpdateSensorSize();
 
             this.Sensor();
         }
@@ -74,7 +75,10 @@ namespace Behaviour
             this._rigidbody2D.MovePosition(newPosition);
 
         }
-
+        /// <summary>
+        /// Land the ship
+        /// </summary>
+        /// <param name="interval"></param>
         protected override void Land(float interval)
         {
             base.Land(interval);
@@ -83,6 +87,18 @@ namespace Behaviour
             {
                 gameObject.SetActive(false);
             }
+        }
+        /// <summary>
+        /// Kill the ship
+        /// </summary>
+        public override void Kill()
+        {
+            FXManagerBehaviourScript.Instance.EnemyDestroyFX(transform.position);
+            gameObject.SetActive(false);
+            this._landing = false;
+            this._healthBar.SetMaxHitPoints(_maxHitPoints);
+            this._hitPoints = _maxHitPoints;
+
         }
 
         /// <summary>
@@ -108,6 +124,7 @@ namespace Behaviour
 
 
         }
+
 
         /*
         public void OnTriggerExit2D(Collider2D other)

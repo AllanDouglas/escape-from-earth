@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using Interfaces;
+using System;
 
 namespace Behaviour
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(HitPointsBarBehaviourScript))]
 
-    public abstract class Ship : MonoBehaviour, IMovable, IGun, IDamageable
+    public abstract class Ship : MonoBehaviour, IMovable, IGun, IDamageable, IDestructive
     {
 
         #region Inspector
@@ -16,7 +17,7 @@ namespace Behaviour
         [SerializeField]
         protected Transform _body;
         [SerializeField]
-        protected int _hitPoints;
+        protected int _maxHitPoints;
         [SerializeField]
         protected int _power;
         [SerializeField]
@@ -109,6 +110,7 @@ namespace Behaviour
         protected bool _moving;
         protected bool _takeOff = false;
         protected bool _landing = false;
+        protected int _hitPoints;
         protected Vector2 _movimentPosition;
         protected float _sensorShootSize = 0.2f;
         protected ProjectileBehaviourScript[] _projectilePool;
@@ -117,8 +119,11 @@ namespace Behaviour
         #region Unity Methods
         protected virtual void Start()
         {
+            _hitPoints = _maxHitPoints;
+
             _healthBar = GetComponent<HitPointsBarBehaviourScript>();
-            _healthBar.SetMaxHitPoints(_hitPoints);
+            _healthBar.SetMaxHitPoints(_maxHitPoints);
+
 
             this._movimentPosition = transform.position;
 
@@ -185,6 +190,11 @@ namespace Behaviour
         }
 
         /// <summary>
+        /// Destroy the ship
+        /// </summary>
+        public abstract void Kill();
+
+        /// <summary>
         /// Stop Movimente
         /// </summary>
         public virtual void StopMoviment()
@@ -204,7 +214,7 @@ namespace Behaviour
 
             if (_hitPoints <= 0)
             {
-                gameObject.SetActive(false);
+                Kill();
             }
 
         }
@@ -309,7 +319,7 @@ namespace Behaviour
 
             for (int i = 0; i < _projectilePool.Length; i++)
             {
-                _projectilePool[i] = Instantiate<ProjectileBehaviourScript>(this._projectilePrefab, transform.position, Quaternion.identity, transform);
+                _projectilePool[i] = Instantiate<ProjectileBehaviourScript>(this._projectilePrefab, transform.position, Quaternion.identity);
 
                 _projectilePool[i].gameObject.SetActive(false);
             }
@@ -328,17 +338,23 @@ namespace Behaviour
             {
                 _enemyTarget = null;
                 return;
-            }
-
-            Debug.Log("protetor entra da area");
+            }          
 
             if (!other.gameObject.CompareTag(_enemyTag))
                 return;
 
-            if (this._enemyTarget == null)
-                this._enemyTarget = other.transform;
+            //if (this._enemyTarget == null)
+            //{
+            //    this._enemyTarget = other.transform;
+            //    //StopMoviment();
+            //}
+
+            this._enemyTarget = other.transform;
+
 
         }
+
+      
 
         #endregion
 

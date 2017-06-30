@@ -22,7 +22,7 @@ namespace Behaviour
         /// </summary>
         internal void Hide()
         {            
-            gameObject.SetActive(false);
+            this._lineRenderer.enabled = false;
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Behaviour
         /// <param name="from"></param>
         internal void SetDirection(Vector2 to , Vector2 from)
         {
-            gameObject.SetActive(true);
+            this._lineRenderer.enabled = true;
 
             _lineRenderer.positionCount = 2;
 

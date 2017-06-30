@@ -8,11 +8,13 @@ namespace Behaviour
 
         #region Inspector
         [SerializeField]
-        private GameObject _prefab;
+        private GameObject _prefabEnemyLV1;        
         [SerializeField]
         private LevelSpawn[] _prefabs;
         [SerializeField]
         private int _amountEach;
+        [SerializeField]
+        private Transform[] _spawnPoints;
         #endregion
 
         private GameObject[] _pool;
@@ -26,17 +28,28 @@ namespace Behaviour
         /// <summary>
         /// Spawn
         /// </summary>
-        public void Spawn()
+        public GameObject Spawn()
         {
             for (int i = 0; i < _pool.Length; i++)
             {
                 if (_pool[i].activeSelf == false)
                 {
                     _pool[i].SetActive(true);
-                    break;
+                    _pool[i].transform.position = GetSpawnPoint();
+                    return _pool[i];                    
                 }
 
             }
+
+            return null;
+        }
+
+        Vector2 GetSpawnPoint()
+        {
+            int i = UnityEngine.Random.Range(0, _spawnPoints.Length);
+
+            return _spawnPoints[i].position;
+
         }
 
         /// <summary>
@@ -48,7 +61,7 @@ namespace Behaviour
 
             for (int i = 0; i < _amountEach; i++)
             {
-                _pool[i] = Instantiate<GameObject>(_prefab, transform);
+                _pool[i] = Instantiate<GameObject>(_prefabEnemyLV1, transform);
                 _pool[i].transform.position = transform.position;
                 _pool[i].gameObject.SetActive(false);
             }
@@ -57,9 +70,8 @@ namespace Behaviour
         [System.Serializable]
         public struct LevelSpawn
         {
-            public int Number;
+            public int Level;
             public GameObject Prefab;
-
             private GameObject[] _pool;
         }
     }
